@@ -1,0 +1,111 @@
+* Jamictl
+  Jamictl is a Jami client written in C++. It uses the library
+  libRingClient and  provides a command-line interface for interacting
+  with the Jami daemon. Currently, this project aims to provide an
+  introduction to the libRingClient and to demonstrate some of the
+  functionalities provided by the library. This client is not
+  complete and does not reproduce every functionality of a regular Jami
+  client.
+* Building jamictl
+  Jamictl is built the same way the gnome client is built.
+  1. Get the jami-project
+     #+BEGIN_SRC bash
+       git clone https://git.jami.net/savoirfairelinux/ring-project.git && cd ring-project
+       # You need the path of the project for later
+       RING_PROJECT="$(pwd)"
+     #+END_SRC
+     2. Initialize the repository
+     #+BEGIN_SRC bash
+       ./make-ring.py --init
+     #+END_SRC
+     3. Build and install all the dependencies:
+     #+BEGIN_SRC bash
+       ./make-ring.py --dependencies
+     #+END_SRC
+     4. Build and install locally under this repository:
+     #+BEGIN_SRC bash
+       ./make-ring.py --install
+     #+END_SRC
+     Now build Jamictl:
+     #+BEGIN_SRC bash
+       git clone https://github.com/bndos/jamictl && cd jamictl
+       mkdir build && cd build
+       cmake -DLibRingClient_PROJECT_DIR=${RING_PROJECT}/lrc ..
+       make
+       # To run (dring needs to be running)
+       ./jamictl
+     #+END_SRC
+     To run dring needs to be running. To run dring:
+     #+BEGIN_SRC bash
+       # If you have jami installed globally
+       /usr/lib/ring/dring
+       # Else
+       cd ${RING_PROJECT}
+       ./daemon/bin/dring
+     #+END_SRC
+
+     Note that you need to specify the libringclient installation
+     location when running the cmake command. So if you cloned
+     ring-project in the Desktop directory the command would be:
+     #+BEGIN_SRC bash
+       cmake -DLibRingClient_PROJECT_DIR=/home/<username>/Desktop/ring-project/lrc ..
+       # Or
+       cmake -DLibRingClient_DIR=/home/<username>/Desktop/ring-project/install/lrc/lib/cmake/LibRingClient ..
+     #+END_SRC
+* Usage
+  The available functionalities are:
+  - Listing the local accounts
+  - Creating a new user
+  - Remove a local account
+  - Choose an account to access to make actions like calling or messaging
+  - Audio and video calling
+  - List contacts
+  - List conversations
+  - Send a message text
+  - Accept the current incoming call
+
+** More details
+   This information can be seen with more details printing the help
+   menu. Listing the accounts provides the account id (usefull when
+   having a lot of accounts to modify the settings in the config file),
+   the hash, the alias and the username. It also provides the index
+   used when switching to an account. A star is shown in the index of
+   the selected account when an account is selected. Sending an sms
+   requires the uid of the conversation which can be retrieved listing
+   the conversations of the account selected. Sending a message with
+   spaces requires the message to be placed between quotes.
+
+* Project details
+  Jamictl is basically a Qt application which the main program is ran
+  as a thread. The client consist of two classes: Drinctrl and
+  Jamictl. In Dringctrl, you will found all the slots and the lrc related
+  things and in Jamictl will be the interface interacting with the
+  Dringctrl class. As said previously, this project aims to be an
+  introduction and an example of the usage of the libringclient
+  library. Therefore, this project makes use of some signals and slots
+  made available by lrc to provide a little bit of event driven
+  functionality to the client. Here is an example of a call
+  interaction:
+  #+BEGIN_EXAMPLE
+    (type 'h' or 'help' for a list of possible commands)
+    >> log 1
+    Switched to account ae74c4a7962864fca2df6c0350c51f376b52cc12
+    >>
+    nuser is calling you!
+    >> ans
+    >>
+    Call with nuser started
+    >>
+    Call with 05c4bd37b1a3c2462249f21b8de4aea6087416ba status: Finished
+    >>
+    Delivery status: sent
+    >>
+    Call with nuser ended
+    >>
+  #+END_EXAMPLE
+
+  Note that the delivery status is for the call interactions that can
+  be viewed in conversations.
+
+  The lrc library outputs useful debug information which jamictl
+  redirects to a file located in /*~/.local/share/jami/jami-cli.log*/.
