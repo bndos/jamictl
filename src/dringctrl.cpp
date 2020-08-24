@@ -42,10 +42,14 @@ Dringctrl::Dringctrl(const char* prompt)
 Dringctrl::~Dringctrl()
 {
     QObject::disconnect(newAccountConnection_);
+    QObject::disconnect(rmAccountConnection_);
     QObject::disconnect(nameRegistrationEnded_);
     QObject::disconnect(registeredNameFound_);
     QObject::disconnect(updateInteractionConnection_);
     QObject::disconnect(callChangedConnection_);
+    QObject::disconnect(callStartedConnection_);
+    QObject::disconnect(callEndedConnection_);
+    QObject::disconnect(newIncomingCallConnection_);
 }
 
 void
@@ -145,7 +149,9 @@ Dringctrl::printAccounts(bool istable)
     if (istable) {
         table.add_row({"index", "accountId", "hash", "alias", "username"});
         for (auto& cell : table[0]) {
-            cell.format().font_style({tabulate::FontStyle::underline}).font_align(tabulate::FontAlign::center);
+            cell.format()
+                .font_style({tabulate::FontStyle::underline})
+                .font_align(tabulate::FontAlign::center);
         }
     }
     int i = 0;
@@ -323,7 +329,9 @@ Dringctrl::getAllContacts(bool istable)
     if (istable) {
         table.add_row({"username", "hash"});
         for (auto& cell : table[0]) {
-            cell.format().font_style({tabulate::FontStyle::underline}).font_align(tabulate::FontAlign::center);
+            cell.format()
+                .font_style({tabulate::FontStyle::underline})
+                .font_align(tabulate::FontAlign::center);
         }
     }
 
@@ -447,12 +455,14 @@ Dringctrl::printConversations(bool istable)
     if (conversations.size() == 0)
         std::cout << "No conversations" << std::endl;
 
-tabulate::Table table;
+    tabulate::Table table;
 
     if (istable) {
         table.add_row({"uid", "hash", "username", "alias", "lastInteraction"});
         for (auto& cell : table[0]) {
-            cell.format().font_style({tabulate::FontStyle::underline}).font_align(tabulate::FontAlign::center);
+            cell.format()
+                .font_style({tabulate::FontStyle::underline})
+                .font_align(tabulate::FontAlign::center);
         }
     }
 
@@ -503,12 +513,14 @@ Dringctrl::printCalls(bool istable)
         return;
     }
 
-tabulate::Table table;
+    tabulate::Table table;
 
     if (istable) {
         table.add_row({"index", "callId", "contact"});
         for (auto& cell : table[0]) {
-            cell.format().font_style({tabulate::FontStyle::underline}).font_align(tabulate::FontAlign::center);
+            cell.format()
+                .font_style({tabulate::FontStyle::underline})
+                .font_align(tabulate::FontAlign::center);
         }
     }
 
